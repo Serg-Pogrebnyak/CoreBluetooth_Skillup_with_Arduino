@@ -27,25 +27,30 @@ class BLE: NSObject {
         }
     }
     
+    var callbackAfterSendOrRead: ((String?) -> Void)?
+    
     fileprivate var manager: CBCentralManager!
     fileprivate var remotePeripheral: CBPeripheral?
     fileprivate var characteristicForWrite: CBCharacteristic?
+    fileprivate var characteristicForRead: CBCharacteristic? {
+        didSet {
+            self.readValue()
+        }
+    }
+    
     fileprivate var bleState = BLEState.off {
         didSet {
             self.bleDidChangeStatus?(bleState)
         }
     }
     
-    fileprivate let characteristicOfUUIDForWrite = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+    fileprivate let characteristicOfUUIDForWrite = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+    fileprivate let characteristicOfUUIDForRead = "6e400004-b5a3-f393-e0a9-e50e24dcca9e"
     fileprivate var peripheralName = "ESP32"
     
     override init() {
         super.init()
         manager = CBCentralManager(delegate: self, queue: DispatchQueue.global())
-    }
-    
-    func hasRemotePeripheral() -> Bool {
-        return remotePeripheral != nil
     }
     
     func startScan() {
@@ -56,6 +61,18 @@ class BLE: NSObject {
         DispatchQueue.global().asyncAfter(deadline: .now() + 5) {
             self.checkStateAfterScanning()
             self.manager.stopScan()
+        }
+    }
+    
+    func sendDataOnDevice(comand: BLECommand) {
+        remotePeripheral!.writeValue(Data(base64Encoded: comand.rawValue.toBase64())!,
+                                     for: characteristicForWrite!,
+                                     type: .withoutResponse)
+    }
+    
+    func disconnectFromDevice() {
+        if remotePeripheral != nil {
+            manager.cancelPeripheralConnection(remotePeripheral!)
         }
     }
     
@@ -82,23 +99,11 @@ class BLE: NSObject {
         }
     }
     
-    func isCanWrite() -> Bool {
-        return characteristicForWrite != nil
-    }
-    
-    func sendDataOnDevice(comand: BLECommand) {
-        remotePeripheral!.writeValue(Data(base64Encoded: comand.rawValue.toBase64())!,
-                                     for: characteristicForWrite!,
-                                     type: .withoutResponse)
-    }
-    
-    func disconnectFromDevice() {
-        if remotePeripheral != nil {
-            manager.cancelPeripheralConnection(remotePeripheral!)
-        }
+    fileprivate func readValue() {
+        remotePeripheral?.readValue(for: characteristicForRead!)
     }
 }
-//
+
 extension BLE: CBCentralManagerDelegate {
     //MARK: delegate for check update bluetooth state
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
@@ -125,6 +130,7 @@ extension BLE: CBPeripheralDelegate {
             self.manager.stopScan()
         }
     }
+    
     //didConnect
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         bleState = .connected
@@ -139,6 +145,7 @@ extension BLE: CBPeripheralDelegate {
         remotePeripheral = nil
         characteristicForWrite = nil
     }
+    
     //describe service
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         guard peripheral.services!.count > 0 else {return}
@@ -146,19 +153,28 @@ extension BLE: CBPeripheralDelegate {
             peripheral.discoverCharacteristics(nil, for: service)
         }
     }
+    
     //describe characteristic
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         guard service.characteristics!.count > 0 else {return}
+//print service and characteristic
+//        for characteristics in service.characteristics! {
+//            print(service.description)
+//            print(characteristics.description)
+//        }
         for characteristics in service.characteristics! {
-            print(Date())
-            print(characteristics.description)
-            print(service.description)
-        }
-        for characteristics in service.characteristics! where characteristics.uuid == CBUUID(string: characteristicOfUUIDForWrite) {
-            characteristicForWrite = characteristics
-            peripheral.setNotifyValue(true, for: characteristicForWrite!)
+            switch characteristics.uuid {
+            case CBUUID(string: characteristicOfUUIDForWrite):
+                characteristicForWrite = characteristics
+            case CBUUID(string: characteristicOfUUIDForRead):
+                characteristicForRead = characteristics
+                peripheral.setNotifyValue(true, for: characteristics)
+            default:
+                print("another uuid found")
+            }
         }
     }
+    
     //result send command
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
         guard characteristic.value != nil else {return}
@@ -169,11 +185,10 @@ extension BLE: CBPeripheralDelegate {
     //result read and result notification
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         guard characteristic.value != nil else {return}
-        print("data is: \(String(bytes: characteristic.value!, encoding: .utf8)!)")
-    }
-    
-    func peripheralDidUpdateName(_ peripheral: CBPeripheral) {
-        print(peripheral)
+        
+        let response = String(bytes: characteristic.value!, encoding: .utf8)
+        print("data is: \(response ?? "Error")")
+        callbackAfterSendOrRead?(response)
     }
 }
 

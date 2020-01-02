@@ -13,6 +13,7 @@ class ViewController: UIViewController {
     @IBOutlet fileprivate weak var firstButton: UIButton!
     @IBOutlet fileprivate weak var secondButton: UIButton!
     @IBOutlet fileprivate weak var connectedStatusImage: UIImageView!
+    @IBOutlet fileprivate weak var lightStatusImage: UIImageView!
     
     fileprivate enum СonnectedAndLightStatusEnum: String {
         case connected = "switch-on"
@@ -38,6 +39,21 @@ class ViewController: UIViewController {
                 }
             }
             
+        }
+        
+        BLE.shared.callbackAfterSendOrRead = { [weak self] (responseText) in
+            switch responseText {
+            case BLECommand.on.rawValue:
+                DispatchQueue.main.async {
+                    self?.lightStatusImage.image = UIImage.init(named: СonnectedAndLightStatusEnum.connected.rawValue)
+                }
+            case BLECommand.off.rawValue:
+                DispatchQueue.main.async {
+                    self?.lightStatusImage.image = UIImage.init(named: СonnectedAndLightStatusEnum.disconnected.rawValue)
+                }
+            default:
+                print("error")
+            }
         }
     }
     

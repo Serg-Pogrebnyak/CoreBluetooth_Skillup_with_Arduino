@@ -98,6 +98,7 @@
                     <connections>
                         <outlet property="connectedStatusImage" destination="b3U-uG-gBf" id="af5-Zs-3tr"/>
                         <outlet property="firstButton" destination="BoU-a9-sbA" id="i4C-kK-i3r"/>
+                        <outlet property="lightStatusImage" destination="sew-Z7-sbZ" id="gqZ-zZ-XtZ"/>
                         <outlet property="secondButton" destination="zvf-zG-HKc" id="buO-e1-ReV"/>
                     </connections>
                 </viewController>
