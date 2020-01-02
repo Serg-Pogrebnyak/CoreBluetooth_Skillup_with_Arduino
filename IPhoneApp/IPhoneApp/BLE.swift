@@ -36,8 +36,8 @@ class BLE: NSObject {
         }
     }
     
-    fileprivate let uuidForWrite = "FFD9"//"beb5483e-36e1-4688-b7f5-ea07361b26a8"//"FFE1"
-    fileprivate var peripheralName = "Triones#FFFF9401EA58"//"ESP32"//"BT05"//'Triones#FFFF9401EA58'
+    fileprivate let characteristicOfUUIDForWrite = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+    fileprivate var peripheralName = "ESP32"
     
     override init() {
         super.init()
@@ -154,7 +154,7 @@ extension BLE: CBPeripheralDelegate {
             print(characteristics.description)
             print(service.description)
         }
-        for characteristics in service.characteristics! where characteristics.uuid == CBUUID(string: uuidForWrite) {
+        for characteristics in service.characteristics! where characteristics.uuid == CBUUID(string: characteristicOfUUIDForWrite) {
             characteristicForWrite = characteristics
             peripheral.setNotifyValue(true, for: characteristicForWrite!)
         }
