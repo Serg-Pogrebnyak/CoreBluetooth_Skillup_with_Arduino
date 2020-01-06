@@ -56,13 +56,6 @@ class ViewController: UIViewController {
             }
         }
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        DispatchQueue.global().asyncAfter(deadline: .now()+2) {
-            BLE.shared.startScan()
-        }
-    }
 
     @IBAction func didTapFirstButton(_ sender: Any) {
         BLE.shared.sendDataOnDevice(comand: .on)

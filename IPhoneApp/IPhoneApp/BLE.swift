@@ -44,9 +44,12 @@ class BLE: NSObject {
         }
     }
     
-    fileprivate let characteristicOfUUIDForWrite = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
-    fileprivate let characteristicOfUUIDForRead = "6e400004-b5a3-f393-e0a9-e50e24dcca9e"
     fileprivate var peripheralName = "ESP32"
+    
+    fileprivate let serviceOfUUIDForWrite = CBUUID(string: "6e400001-b5a3-f393-e0a9-e50e24dcca9e")
+    fileprivate let characteristicOfUUIDForWrite = CBUUID(string: "6e400003-b5a3-f393-e0a9-e50e24dcca9e")
+    fileprivate let serviceOfUUIDForRead = CBUUID(string: "6e400002-b5a3-f393-e0a9-e50e24dcca9e")
+    fileprivate let characteristicOfUUIDForRead = CBUUID(string: "6e400004-b5a3-f393-e0a9-e50e24dcca9e")
     
     override init() {
         super.init()
@@ -57,7 +60,7 @@ class BLE: NSObject {
         if remotePeripheral != nil {
             manager.cancelPeripheralConnection(remotePeripheral!)
         }
-        manager.scanForPeripherals(withServices: nil, options: nil)
+        manager.scanForPeripherals(withServices: [serviceOfUUIDForWrite, serviceOfUUIDForRead], options: nil)
         DispatchQueue.global().asyncAfter(deadline: .now() + 5) {
             self.checkStateAfterScanning()
             self.manager.stopScan()
@@ -109,6 +112,7 @@ extension BLE: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
             bleState = .on
+            startScan()
         } else {
             bleState = .off
         }
@@ -122,7 +126,7 @@ extension BLE: CBPeripheralDelegate {
             bleState = .searchAndConnecting
         }
         if let deviceName = peripheral.name {
-            print(deviceName)
+            print(deviceName, advertisementData)
         }
         if peripheral.name == peripheralName {
             manager.connect(peripheral, options: nil)
@@ -164,9 +168,9 @@ extension BLE: CBPeripheralDelegate {
 //        }
         for characteristics in service.characteristics! {
             switch characteristics.uuid {
-            case CBUUID(string: characteristicOfUUIDForWrite):
+            case characteristicOfUUIDForWrite:
                 characteristicForWrite = characteristics
-            case CBUUID(string: characteristicOfUUIDForRead):
+            case characteristicOfUUIDForRead:
                 characteristicForRead = characteristics
                 peripheral.setNotifyValue(true, for: characteristics)
             default:

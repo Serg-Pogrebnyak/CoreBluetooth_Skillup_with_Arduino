@@ -70,5 +70,7 @@ void setupBluetooth() {
 
   BLEAdvertising *pAdvertising = pServer->getAdvertising();
   pAdvertising->setMinPreferred(0x06);
+  pAdvertising->addServiceUUID(SERVICE_UUID_FOR_WRITE);
+  pAdvertising->addServiceUUID(SERVICE_UUID_FOR_READ);
   pAdvertising->start();
 }
