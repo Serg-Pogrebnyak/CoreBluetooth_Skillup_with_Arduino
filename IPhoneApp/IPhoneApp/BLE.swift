@@ -27,7 +27,7 @@ class BLE: NSObject {
         }
     }
     
-    var callbackAfterSendOrRead: ((String?) -> Void)?
+    var callbackAfterSendOrRead: ((String?, Float?) -> Void)?
     
     fileprivate var manager: CBCentralManager!
     fileprivate var remotePeripheral: CBPeripheral?
@@ -206,8 +206,9 @@ extension BLE: CBPeripheralDelegate {
         guard characteristic.value != nil else {return}
         
         let response = String(bytes: characteristic.value!, encoding: .utf8)
-        print("data is: \(response ?? "Error")")
-        callbackAfterSendOrRead?(response)
+        let temperature = characteristic.value?.withUnsafeBytes { $0.load(as: Float.self) }
+        print("data is: \(response ?? "Error") float is: \(temperature ?? 0.0)")
+        callbackAfterSendOrRead?(response, temperature)
     }
 }
 

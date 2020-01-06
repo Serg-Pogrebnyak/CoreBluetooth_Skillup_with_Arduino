@@ -75,6 +75,12 @@
                                     <constraint firstAttribute="height" constant="25" id="eDs-xe-pkv"/>
                                 </constraints>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Ar-Ss-WBc">
+                                <rect key="frame" x="186" y="141" width="42" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
@@ -82,12 +88,14 @@
                             <constraint firstItem="b3U-uG-gBf" firstAttribute="centerY" secondItem="CYG-Kt-gf0" secondAttribute="centerY" id="0Uu-sl-G9g"/>
                             <constraint firstItem="zvf-zG-HKc" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="1tl-mv-94L"/>
                             <constraint firstItem="m0J-ST-p0J" firstAttribute="top" secondItem="CYG-Kt-gf0" secondAttribute="bottom" constant="20" id="30t-b8-HRT"/>
+                            <constraint firstItem="1Ar-Ss-WBc" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="9kz-c9-1hF"/>
                             <constraint firstItem="Bax-ya-Fjs" firstAttribute="top" secondItem="BoU-a9-sbA" secondAttribute="bottom" constant="50" id="Hgd-dP-LsX"/>
                             <constraint firstItem="BoU-a9-sbA" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="KCL-Lg-LFG"/>
                             <constraint firstItem="b3U-uG-gBf" firstAttribute="leading" secondItem="CYG-Kt-gf0" secondAttribute="trailing" constant="10" id="LGR-WD-4J9"/>
                             <constraint firstItem="sew-Z7-sbZ" firstAttribute="centerY" secondItem="m0J-ST-p0J" secondAttribute="centerY" id="TMt-lb-NtJ"/>
                             <constraint firstItem="sew-Z7-sbZ" firstAttribute="leading" secondItem="m0J-ST-p0J" secondAttribute="trailing" constant="10" id="XQd-aN-H3S"/>
                             <constraint firstItem="Bax-ya-Fjs" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="lKU-yY-xp8"/>
+                            <constraint firstItem="1Ar-Ss-WBc" firstAttribute="top" secondItem="m0J-ST-p0J" secondAttribute="bottom" constant="15" id="mmG-Hy-3Ls"/>
                             <constraint firstItem="m0J-ST-p0J" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="p4b-Vq-8XS"/>
                             <constraint firstItem="CYG-Kt-gf0" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="rsy-oW-mLh"/>
                             <constraint firstItem="CYG-Kt-gf0" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="seo-sr-VdT"/>
@@ -99,7 +107,9 @@
                         <outlet property="connectedStatusImage" destination="b3U-uG-gBf" id="af5-Zs-3tr"/>
                         <outlet property="firstButton" destination="BoU-a9-sbA" id="i4C-kK-i3r"/>
                         <outlet property="lightStatusImage" destination="sew-Z7-sbZ" id="gqZ-zZ-XtZ"/>
+                        <outlet property="lightStatusLabel" destination="m0J-ST-p0J" id="2a2-dT-rv9"/>
                         <outlet property="secondButton" destination="zvf-zG-HKc" id="buO-e1-ReV"/>
+                        <outlet property="temperatureLabel" destination="1Ar-Ss-WBc" id="TMU-DQ-7lb"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
