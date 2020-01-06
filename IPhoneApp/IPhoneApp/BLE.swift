@@ -56,15 +56,18 @@ class BLE: NSObject {
         manager = CBCentralManager(delegate: self, queue: DispatchQueue.global())
     }
     
-    func startScan() {
-        if remotePeripheral != nil {
-            manager.cancelPeripheralConnection(remotePeripheral!)
+    func connectToDevice() {
+        guard   let identifier = UserDefaults.standard.value(forKey: "peripheralIdentifier") as? String,
+                let uuid = UUID.init(uuidString: identifier),
+                let savedPeripheral = manager.retrievePeripherals(withIdentifiers: [uuid]).first
+        else {
+            self.startScan()
+            return
         }
-        manager.scanForPeripherals(withServices: [serviceOfUUIDForWrite, serviceOfUUIDForRead], options: nil)
-        DispatchQueue.global().asyncAfter(deadline: .now() + 5) {
-            self.checkStateAfterScanning()
-            self.manager.stopScan()
-        }
+        
+        remotePeripheral = savedPeripheral
+        remotePeripheral!.delegate = self
+        manager.connect(remotePeripheral!, options: nil)
     }
     
     func sendDataOnDevice(comand: BLECommand) {
@@ -76,6 +79,17 @@ class BLE: NSObject {
     func disconnectFromDevice() {
         if remotePeripheral != nil {
             manager.cancelPeripheralConnection(remotePeripheral!)
+        }
+    }
+    
+    fileprivate func startScan() {
+        if remotePeripheral != nil {
+            manager.cancelPeripheralConnection(remotePeripheral!)
+        }
+        manager.scanForPeripherals(withServices: [serviceOfUUIDForWrite, serviceOfUUIDForRead], options: nil)
+        DispatchQueue.global().asyncAfter(deadline: .now() + 5) {
+            self.checkStateAfterScanning()
+            self.manager.stopScan()
         }
     }
     
@@ -112,7 +126,7 @@ extension BLE: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
             bleState = .on
-            startScan()
+            connectToDevice()
         } else {
             bleState = .off
         }
@@ -141,6 +155,7 @@ extension BLE: CBPeripheralDelegate {
         peripheral.discoverServices(nil)
         remotePeripheral = peripheral
         remotePeripheral!.delegate = self
+        UserDefaults.standard.set(remotePeripheral?.identifier.uuidString, forKey: "peripheralIdentifier")
     }
     
     //didDisconnect

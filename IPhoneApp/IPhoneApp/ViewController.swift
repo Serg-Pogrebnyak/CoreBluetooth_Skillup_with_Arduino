@@ -66,7 +66,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func scan(_ sender: Any) {
-        BLE.shared.startScan()
+        BLE.shared.connectToDevice()
     }
 }
 
