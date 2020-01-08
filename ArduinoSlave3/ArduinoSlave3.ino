@@ -24,8 +24,8 @@ void loop() {
   if (isnan(t)) {
     Serial.println("ошибка считывания данных");
   } else {
-    Serial.println(t);
     if (abs(oldTemperature - t)> 0.1) {
+      Serial.println(t);
       pCharacteristicStatus->setValue(t);
       pCharacteristicStatus->notify();
       oldTemperature = t;
