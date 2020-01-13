@@ -26,7 +26,7 @@ void loop() {
   } else {
     if (abs(oldTemperature - t)> 0.1) {
       Serial.println(t);
-      pCharacteristicStatus->setValue(t);
+      pCharacteristicStatus->setValue(String(t).c_str());
       pCharacteristicStatus->notify();
       oldTemperature = t;
     }

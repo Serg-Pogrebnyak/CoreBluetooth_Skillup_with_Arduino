@@ -206,7 +206,12 @@ extension BLE: CBPeripheralDelegate {
         guard characteristic.value != nil else {return}
         
         let response = String(bytes: characteristic.value!, encoding: .utf8)
-        let temperature = characteristic.value?.withUnsafeBytes { $0.load(as: Float.self) }
+        
+        var temperature: Float? = nil
+        if response != nil && Float.init(response!) != nil {
+            temperature = Float.init(response!)
+        }
+        
         print("data is: \(response ?? "Error") float is: \(temperature ?? 0.0)")
         callbackAfterSendOrRead?(response, temperature)
     }
